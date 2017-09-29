@@ -86,6 +86,7 @@ public class GraphTest {
         System.out.println("graph => " + graph);
 
         Traversal traversal = new Traversal("MEM:4G", graph);
+//        TraversalDJ traversal = new TraversalDJ("MEM:4G", graph);
         System.out.println(traversal.traversal());
 
     }
