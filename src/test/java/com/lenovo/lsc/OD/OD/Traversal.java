@@ -1,14 +1,8 @@
 package com.lenovo.lsc.OD.OD;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import com.google.common.graph.MutableValueGraph;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -29,7 +23,7 @@ take        移除并返回队列头部的元素         如果队列为空，�
 public class Traversal {
     private final String sourceNode;
     private final MutableValueGraph<String, String> graph;
-    private ArrayList<String> latestNodes = Lists.newArrayList();
+    private Multimap<String, String> scoreMultimap = ArrayListMultimap.create();
 
     public Traversal(String sourceNode, MutableValueGraph<String, String> graph) {
         this.sourceNode = sourceNode;
@@ -70,9 +64,7 @@ public class Traversal {
                 System.out.println(table);
                 Map<String, String> tempRow = Maps.newHashMap();
                 Set<String> tableKeySet = table.rowKeySet();
-//                tableKeySet.forEach(row -> {
-                for (String row :
-                        tableKeySet) {
+                tableKeySet.forEach(row -> {
 
 
                     System.out.println("row=>" + row);
@@ -80,20 +72,15 @@ public class Traversal {
                     Map<String, String> row1 = table.row(row);
                     Set<String> rowKeySet = row1.keySet();
 
-                    String tempCell = "";
-                    String temVT = "";
+
+                    Temp temp = new Temp();
 
                     for (String cell : rowKeySet) {
-//                        System.out.println(cell);
                         String vt = table.get(row, cell);
-                        if (vt.split("|").length > temVT.split("|").length) {
-                            temVT = vt;
-                            tempCell = cell;
-                        }
+                        temp = findMoreLineVT(temp, cell, vt);
                     }
-                    System.out.println(temVT);
-//                });
-                }
+
+                });
 
 
             } else {
@@ -105,8 +92,10 @@ public class Traversal {
 
     }
 
-    private Temp buildTemp(Temp temp, String cell, String vt) {
-
+    private Temp findMoreLineVT(Temp temp, String cell, String vt) {
+        if (vt.split("|").length > temp.getTemVT().split("|").length) {
+            return temp.builder().temVT(vt).tempCell(cell).build();
+        }
         return temp;
     }
 
