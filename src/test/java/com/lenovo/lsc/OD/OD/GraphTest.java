@@ -3,6 +3,7 @@ package com.lenovo.lsc.OD.OD;
 import com.google.common.collect.*;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,13 +12,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Collection;
 import java.util.stream.Collector;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class GraphTest {
 
     @Test
     public void testOD() {
-
 
         //covert graph
         MutableValueGraph<String, String> graph = ValueGraphBuilder.undirected().build();
@@ -43,12 +44,9 @@ public class GraphTest {
         ImmutableSet<String> variantMultmapkey = variantMultmap.keySet();
         for (String key : variantMultmapkey) {
 
-            System.out.println("key=>>" + key);
+            log.info("key=>>" + key);
 
-            String t = key.split(":")[0];
-            String s = key.split(":")[1];
-
-            System.out.println("value=>" + variantMultmap.get(key));
+            log.info("value=>" + variantMultmap.get(key));
 
             ImmutableCollection<String> variantValues = variantMultmap.get(key);
             Multimap<String, String> variantValueMultimap = variantValues.stream().collect(Collector.of(ArrayListMultimap::create, (multimap, vt) -> {
@@ -58,7 +56,7 @@ public class GraphTest {
                 return multi1;
             }));
 
-            System.out.println("cvMultimap => " + variantValueMultimap);
+            log.info("cvMultimap => " + variantValueMultimap);
 
             for (int i = 0; i < variantValueMultimap.keySet().size() - 1; i++) {
 
@@ -72,22 +70,18 @@ public class GraphTest {
                                 valueJ.forEach(vJ -> {
                                     graph.putEdgeValue(charI.concat(":").concat(vI), charJ.concat(":").concat(vJ), (graph.edgeValueOrDefault(charI.concat(":").concat(vI), charJ.concat(":").concat(vJ), "").equals("") ? "" : (graph.edgeValue(charI.concat(":").concat(vI), charJ.concat(":").concat(vJ)) + "|")) + key);
                                 });
-
                             }
                     );
-
                 }
             }
-
         }
 
-        System.out.println("graph => " + graph);
+        log.info("graph => " + graph);
 
-//        Traversal traversal = new Traversal("MEM:4G", graph);
 //        Traversal2 traversal = new Traversal2("MEM:4G", graph);
         Traversal2 traversal = new Traversal2("CPU:I5", graph);
 //        Traversal2 traversal = new Traversal2("HDD:256G", graph);
-        System.out.println(traversal.traversal());
+        log.info(traversal.traversal().toString());
 
     }
 }

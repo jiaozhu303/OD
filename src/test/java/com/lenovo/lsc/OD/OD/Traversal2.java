@@ -2,11 +2,12 @@ package com.lenovo.lsc.OD.OD;
 
 import com.google.common.collect.*;
 import com.google.common.graph.MutableValueGraph;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 /*
-
+Queue
 队列特性：
 
 add        增加一个元索                    如果队列已满，则抛出一个IIIegaISlabEepeplian异常
@@ -19,11 +20,10 @@ put         添加一个元素                   如果队列满，则阻塞
 take        移除并返回队列头部的元素         如果队列为空，则阻塞
 
  */
+@Slf4j
 public class Traversal2 {
     private final String sourceNode;
     private final MutableValueGraph<String, String> graph;
-    //    private Map<String, String> scoreMultimap = Maps.newHashMap();
-//    private  Multimap<String, String> scoreMultimap = ArrayListMultimap.create();
     private Multimap<String, String> scoreMultimap = HashMultimap.create();
 
 
@@ -39,21 +39,19 @@ public class Traversal2 {
             throw new IllegalArgumentException(sourceNode + " is not in this graph!");
         }
 
-        //被访问的节点
+        //Visited node
         Map<String, Integer> visitedNodes = new HashMap<>();
 
-        //队列
         Queue<String> queue = new LinkedList<String>();
 
         Set<String> queueUsed = Sets.newHashSet();
-        //源节点放入队列中
+
         queue.offer(sourceNode);
         queueUsed.add(sourceNode);
 
         while (!queue.isEmpty()) {
-            //第一次访问的时候依然是源节点，从队列中取出头部的第一个元素
+            //The first visit is still the source node, remove and get the first element from the queue
             String currentVisitNode = queue.poll();
-//            if (!visitedNodes.keySet().contains(currentVisitNode)) {
 
             Table<String, String, String> table = HashBasedTable.create();
 
@@ -62,50 +60,28 @@ public class Traversal2 {
                     String edgeValue = graph.edgeValue(currentVisitNode, node);
                     table.put(node.split(":")[0], node.split(":")[1], edgeValue);
                 }
-
             });
 
-            System.out.println(table);
-            Map<String, String> tempRow = Maps.newHashMap();
+            log.info(table.toString());
             Set<String> tableKeySet = table.rowKeySet();
             tableKeySet.forEach(row -> {
 
-
-                System.out.println("row=>" + row);
-
+                log.info("row=>" + row);
                 Map<String, String> row1 = table.row(row);
                 Set<String> rowKeySet = row1.keySet();
-
-
-//                Temp temp = new Temp();
                 Set<Temp> tempSets = Sets.newHashSet();
-
                 for (String cell : rowKeySet) {
                     String vt = table.get(row, cell);
-//                    temp = findMoreLineVT(temp, cell, vt);
                     tempSets = findMoreLineVTs(tempSets, cell, vt, row, visitedNodes);
                 }
-//                scoreMultimap.put(row, temp.getTempCell());
                 addScoreMultiMap(scoreMultimap, row, tempSets);
-
                 addQueueUsed(queueUsed, queue, row, tempSets);
-//                if (!queueUsed.contains(row + ":" + temp.getTempCell())) {
-//                    queue.offer(row + ":" + temp.getTempCell());
-//                    queueUsed.add(row + ":" + temp.getTempCell());
-//                }
-
-
             });
             visitedNodes.put(currentVisitNode, 1);
-
-//            } else {
-//
-//            }
         }
         String[] sorceNodeSplit = sourceNode.split(":");
         scoreMultimap.put(sorceNodeSplit[0], sorceNodeSplit[1]);
         return scoreMultimap;
-
     }
 
     private void addQueueUsed(Set<String> queueUsed, Queue<String> queue, String row, Set<Temp> tempSets) {
@@ -120,7 +96,6 @@ public class Traversal2 {
                     queueUsed.add(row + ":" + temp.getTempCell());
                 }
             }
-
         });
     }
 
@@ -148,13 +123,9 @@ public class Traversal2 {
                     tempSetsBack.add(temp);
                 }
             }
-
             tempSets = tempSetsBack;
         }
-
-
         return tempSets;
     }
-
 
 }
