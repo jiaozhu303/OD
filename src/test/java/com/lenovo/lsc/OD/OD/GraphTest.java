@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collector;
 
 @Slf4j
@@ -37,6 +38,9 @@ public class GraphTest {
         variantBuilder.put("VT3:1", "MEM:4G");
         variantBuilder.put("VT3:1", "CPU:I5");
         variantBuilder.put("VT3:1", "Card:NV810");
+
+        variantBuilder.put("VT3:1", "MEM:8G");
+        variantBuilder.put("VT1:1", "MEM:8G");
 
 
         ImmutableMultimap<String, String> variantMultmap = variantBuilder.build();
@@ -78,10 +82,31 @@ public class GraphTest {
 
         log.info("graph => " + graph);
 
-//        Traversal2 traversal = new Traversal2("MEM:4G", graph);
-        Traversal2 traversal = new Traversal2("CPU:I5", graph);
-//        Traversal2 traversal = new Traversal2("HDD:256G", graph);
-        log.info(traversal.traversal().toString());
+//        Multimap<String, String> traversal = new Traversal2("MEM:4G", graph).traversal();
+//        Multimap<String, String> traversal = new Traversal2("CPU:I5", graph).traversal();
+//        Multimap<String, String> traversal = new Traversal2("HDD:256G", graph).traversal();
 
+        Multimap<String, String> traversalOne = new Traversal2("MEM:4G", graph).traversal();
+        Multimap<String, String> traversalTwo = new Traversal2("CPU:I5", graph).traversal();
+        Multimap<String, String> traversal = intersectionCollection(traversalOne, traversalTwo);
+
+        log.info(traversal.toString());
+
+    }
+
+    private Multimap<String,String> intersectionCollection(Multimap<String, String> traversalOne, Multimap<String, String> traversalTwo) {
+        Multimap<String, String> scoreMultimap = HashMultimap.create();
+        Collection<Map.Entry<String, String>> entriesOne = traversalOne.entries();
+        Collection<Map.Entry<String, String>> entriesTwo = traversalTwo.entries();
+
+        entriesOne.forEach( one -> {
+            entriesTwo.forEach(two -> {
+                if(one.getKey().equals(two.getKey()) && one.getValue().equals(two.getValue())){
+                    scoreMultimap.put(one.getKey(),one.getValue());
+                }
+            });
+        });
+
+       return scoreMultimap;
     }
 }
