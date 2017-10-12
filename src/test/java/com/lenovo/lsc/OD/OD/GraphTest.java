@@ -38,8 +38,6 @@ public class GraphTest {
         variantBuilder.put("VT3:1", "Card:NV810");
 
 
-
-
         ImmutableMultimap<String, String> variantMultmap = variantBuilder.build();
 
         ImmutableSet<String> variantMultmapkey = variantMultmap.keySet();
@@ -88,6 +86,7 @@ public class GraphTest {
 //        Traversal traversal = new Traversal("MEM:4G", graph);
 //        Traversal2 traversal = new Traversal2("MEM:4G", graph);
         Traversal2 traversal = new Traversal2("CPU:I5", graph);
+//        Traversal2 traversal = new Traversal2("HDD:256G", graph);
         System.out.println(traversal.traversal());
 
     }

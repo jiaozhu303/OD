@@ -22,15 +22,17 @@ take        移除并返回队列头部的元素         如果队列为空，�
 public class Traversal2 {
     private final String sourceNode;
     private final MutableValueGraph<String, String> graph;
-//    private Map<String, String> scoreMultimap = Maps.newHashMap();
-    private  Multimap<String, String> scoreMultimap = ArrayListMultimap.create();
+    //    private Map<String, String> scoreMultimap = Maps.newHashMap();
+//    private  Multimap<String, String> scoreMultimap = ArrayListMultimap.create();
+    private Multimap<String, String> scoreMultimap = HashMultimap.create();
+
 
     public Traversal2(String sourceNode, MutableValueGraph<String, String> graph) {
         this.sourceNode = sourceNode;
         this.graph = graph;
     }
 
-    public  Multimap<String, String> traversal() {
+    public Multimap<String, String> traversal() {
 
         Set<String> nodes = graph.nodes();
         if (!nodes.contains(sourceNode)) {
@@ -100,23 +102,30 @@ public class Traversal2 {
 //
 //            }
         }
-        System.out.println(scoreMultimap);
+        String[] sorceNodeSplit = sourceNode.split(":");
+        scoreMultimap.put(sorceNodeSplit[0], sorceNodeSplit[1]);
         return scoreMultimap;
 
     }
 
     private void addQueueUsed(Set<String> queueUsed, Queue<String> queue, String row, Set<Temp> tempSets) {
         tempSets.forEach(temp -> {
-            if (!queueUsed.contains(row + ":" + temp.getTempCell())) {
-                queue.offer(row + ":" + temp.getTempCell());
-                queueUsed.add(row + ":" + temp.getTempCell());
+            if (sourceNode.split(":")[0].equals(row)) {
+                if (!queueUsed.contains(row + ":" + temp.getTempCell())) {
+                    queueUsed.add(row + ":" + temp.getTempCell());
+                }
+            } else {
+                if (!queueUsed.contains(row + ":" + temp.getTempCell())) {
+                    queue.offer(row + ":" + temp.getTempCell());
+                    queueUsed.add(row + ":" + temp.getTempCell());
+                }
             }
+
         });
     }
 
 
-    private void addScoreMultiMap( Multimap<String, String> scoreMultimap, String row, Set<Temp> tempSets) {
-//        scoreMultimap.put(row, temp.getTempCell());
+    private void addScoreMultiMap(Multimap<String, String> scoreMultimap, String row, Set<Temp> tempSets) {
         tempSets.forEach(temp -> scoreMultimap.put(row, temp.getTempCell()));
     }
 
@@ -143,14 +152,8 @@ public class Traversal2 {
             tempSets = tempSetsBack;
         }
 
-        return tempSets;
-    }
 
-    private Temp findMoreLineVT(Temp temp, String cell, String vt) {
-        if (vt.split("|").length > temp.getTemVT().split("|").length) {
-            return temp.builder().temVT(vt).tempCell(cell).build();
-        }
-        return temp;
+        return tempSets;
     }
 
 
