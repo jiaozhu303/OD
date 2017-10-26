@@ -4,7 +4,6 @@ import com.google.common.collect.*;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import com.lenovo.lsc.OD.dto.DataVT;
-import com.lenovo.lsc.OD.dto.Variants;
 import com.lenovo.lsc.OD.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -14,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
 
@@ -26,27 +24,28 @@ public class GraphTest {
     @Test
     public void testOD() throws IOException {
 
+        long b = System.currentTimeMillis();
         //covert graph
         MutableValueGraph<String, String> graph = ValueGraphBuilder.undirected().build();
-
-        DataVT records = JsonUtils.fromFile(this.getClass().getResource("/") + "80NVCTO1WW.json", DataVT.class);
-
-        //load data
         ImmutableMultimap.Builder<String, String> variantBuilder = ImmutableMultimap.builder();
-        variantBuilder.put("VT1:1", "MEM:4G");
-        variantBuilder.put("VT1:1", "CPU:I5");
-        variantBuilder.put("VT1:1", "CPU:I7");
-        variantBuilder.put("VT2:1", "CPU:I5");
-        variantBuilder.put("VT2:1", "HDD:256G");
-        variantBuilder.put("VT2:2", "CPU:I7");
-        variantBuilder.put("VT2:2", "HDD:128G");
-        variantBuilder.put("VT2:2", "HDD:256G");
-        variantBuilder.put("VT3:1", "MEM:4G");
-        variantBuilder.put("VT3:1", "CPU:I5");
-        variantBuilder.put("VT3:1", "Card:NV810");
 
-        variantBuilder.put("VT3:1", "MEM:8G");
-        variantBuilder.put("VT1:1", "MEM:8G");
+        DataVT records = JsonUtils.fromFile(Thread.currentThread().getContextClassLoader().getResource("").getPath() + "/80NVCTO1WW.json", DataVT.class);
+        records.getRecords().stream().forEach(variabt -> variantBuilder.put(variabt.getVarTab() + ":" + variabt.getSequence(), variabt.getCharName() + ":" + variabt.getCharValue()));
+        //load data
+//        variantBuilder.put("VT1:1", "MEM:4G");
+//        variantBuilder.put("VT1:1", "CPU:I5");
+//        variantBuilder.put("VT1:1", "CPU:I7");
+//        variantBuilder.put("VT2:1", "CPU:I5");
+//        variantBuilder.put("VT2:1", "HDD:256G");
+//        variantBuilder.put("VT2:2", "CPU:I7");
+//        variantBuilder.put("VT2:2", "HDD:128G");
+//        variantBuilder.put("VT2:2", "HDD:256G");
+//        variantBuilder.put("VT3:1", "MEM:4G");
+//        variantBuilder.put("VT3:1", "CPU:I5");
+//        variantBuilder.put("VT3:1", "Card:NV810");
+//
+//        variantBuilder.put("VT3:1", "MEM:8G");
+//        variantBuilder.put("VT1:1", "MEM:8G");
 
 
         ImmutableMultimap<String, String> variantMultmap = variantBuilder.build();
@@ -88,15 +87,16 @@ public class GraphTest {
 
         log.info("graph => " + graph);
 
-//        Multimap<String, String> traversal = new Traversal2("MEM:4G", graph).traversal();
+        Multimap<String, String> traversal = new Traversal2("NBCPUCP:I7-6500U", graph).traversal();
 //        Multimap<String, String> traversal = new Traversal2("CPU:I5", graph).traversal();
 //        Multimap<String, String> traversal = new Traversal2("HDD:256G", graph).traversal();
 
-        Multimap<String, String> traversalOne = new Traversal2("MEM:4G", graph).traversal();
-        Multimap<String, String> traversalTwo = new Traversal2("CPU:I5", graph).traversal();
-        Multimap<String, String> traversal = intersectionCollection(traversalOne, traversalTwo);
+//        Multimap<String, String> traversalOne = new Traversal2("MEM:4G", graph).traversal();
+//        Multimap<String, String> traversalTwo = new Traversal2("CPU:I5", graph).traversal();
+//        Multimap<String, String> traversal = intersectionCollection(traversalOne, traversalTwo);
+        long e = System.currentTimeMillis();
 
-        log.info(traversal.toString());
+        log.info("\ntime: {} ms.\n{}", e - b, JsonUtils.toJson(traversal.asMap()));
 
     }
 
