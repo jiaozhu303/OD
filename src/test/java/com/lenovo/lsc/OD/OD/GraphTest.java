@@ -3,13 +3,18 @@ package com.lenovo.lsc.OD.OD;
 import com.google.common.collect.*;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import com.lenovo.lsc.OD.dto.DataVT;
+import com.lenovo.lsc.OD.dto.Variants;
+import com.lenovo.lsc.OD.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
 
@@ -19,11 +24,12 @@ import java.util.stream.Collector;
 public class GraphTest {
 
     @Test
-    public void testOD() {
+    public void testOD() throws IOException {
 
         //covert graph
         MutableValueGraph<String, String> graph = ValueGraphBuilder.undirected().build();
 
+        DataVT records = JsonUtils.fromFile(this.getClass().getResource("/") + "80NVCTO1WW.json", DataVT.class);
 
         //load data
         ImmutableMultimap.Builder<String, String> variantBuilder = ImmutableMultimap.builder();
@@ -94,19 +100,19 @@ public class GraphTest {
 
     }
 
-    private Multimap<String,String> intersectionCollection(Multimap<String, String> traversalOne, Multimap<String, String> traversalTwo) {
+    private Multimap<String, String> intersectionCollection(Multimap<String, String> traversalOne, Multimap<String, String> traversalTwo) {
         Multimap<String, String> scoreMultimap = HashMultimap.create();
         Collection<Map.Entry<String, String>> entriesOne = traversalOne.entries();
         Collection<Map.Entry<String, String>> entriesTwo = traversalTwo.entries();
 
-        entriesOne.forEach( one -> {
+        entriesOne.forEach(one -> {
             entriesTwo.forEach(two -> {
-                if(one.getKey().equals(two.getKey()) && one.getValue().equals(two.getValue())){
-                    scoreMultimap.put(one.getKey(),one.getValue());
+                if (one.getKey().equals(two.getKey()) && one.getValue().equals(two.getValue())) {
+                    scoreMultimap.put(one.getKey(), one.getValue());
                 }
             });
         });
 
-       return scoreMultimap;
+        return scoreMultimap;
     }
 }

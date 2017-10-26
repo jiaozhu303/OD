@@ -1,4 +1,4 @@
-package com.lenovo.lsc.OD;
+package com.lenovo.lsc.OD.utils;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
